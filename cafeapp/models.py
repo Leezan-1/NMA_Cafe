@@ -8,6 +8,7 @@ class Customer(models.Model):
     mname = models.CharField(max_length=40, blank=True, default=None, verbose_name='Middle Name')
     lname = models.CharField(max_length=25, null=False, verbose_name='Last Name')
     email = models.EmailField(max_length=60, null=False, unique=True, db_index=True, verbose_name='Email')
+    password = models.CharField(max_length=40, verbose_name='Password')
     address = models.TextField(max_length=200,verbose_name= 'Address', blank=True, default=None)
 
     def __str__(self) -> str:

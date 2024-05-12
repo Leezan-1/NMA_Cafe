@@ -5,6 +5,16 @@
 {% block content %}
     <form action="" method="post">
         {% csrf_token %}
-        {{ form_fields }}
+        {{ login_form.username.label }}
+        <br>
+        {{ login_form.username}}
+        {% if login_form.username.errors %}
+            <ul class="errorlist">
+                {% for error in login_form.username.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <button type="submit">Login</button>
     </form>
 {% endblock %}
