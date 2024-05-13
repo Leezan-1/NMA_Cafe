@@ -4,10 +4,10 @@ from cafeapp.choices import ORDER_STATUS
 
 # Customer model to add customer info
 class Customer(models.Model):
-    fname = models.CharField(max_length=25, null=False, verbose_name='First Name')
+    fname = models.CharField(max_length=25, verbose_name='First Name')
     mname = models.CharField(max_length=40, blank=True, default=None, verbose_name='Middle Name')
-    lname = models.CharField(max_length=25, null=False, verbose_name='Last Name')
-    email = models.EmailField(max_length=60, null=False, unique=True, db_index=True, verbose_name='Email')
+    lname = models.CharField(max_length=25, verbose_name='Last Name')
+    email = models.EmailField(max_length=60, unique=True, db_index=True, verbose_name='Email')
     password = models.CharField(max_length=40, verbose_name='Password')
     address = models.TextField(max_length=200,verbose_name= 'Address', blank=True, default=None)
 
@@ -60,12 +60,22 @@ class Food(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.SET_DEFAULT, default='Deleted')
-    food = models.ManyToManyField(Food)
-    price = models.IntegerField()
-    date = models.DateField(auto_now=True)
-    time = models.TimeField(auto_now=True)
-    status= models.CharField(max_length=1, choices=ORDER_STATUS, blank=False, default = 'u')
+    customer = models.ForeignKey(Customer, on_delete=models.SET_DEFAULT, default='Deleted', related_name="ordered_customer")
+    food = models.ManyToManyField(Food, through="OrderItem", related_name="ordered_food")
+    price = models.IntegerField(verbose_name="Order Price")
+    initiated_date = models.DateField(auto_now=True, verbose_name="Ordered Date")
+    initiated_time = models.TimeField(auto_now=True, verbose_name="Ordered Time")
+    completion_date = models.DateField(blank=True, default=None, verbose_name="Completed Date")
+    completion_time = models.TimeField(blank=True, default=None, verbose_name="Completed Time")
+    status= models.CharField(max_length=1, choices=ORDER_STATUS, blank=False, default = 'u', verbose_name="Order Status")
 
     def __str__(self) -> str:
         return f"{self.id} {self.customer.fname} {self.customer.lname} - {self.price}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    fooditem = models.ForeignKey(Food, on_delete=models.CASCADE)
+    quantity = models.IntegerField(verbose_name="Quantity")
+
+    def __str__(self) -> str:
+        return f"{self.fooditem.item_name} - {self.quantity}"
